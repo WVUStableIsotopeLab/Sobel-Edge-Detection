@@ -1,0 +1,203 @@
+import numpy as np
+import pandas as pd
+
+#Data Extraction
+
+path = "C:/Users/jb00202/Downloads/316L-TP3-0004.xlsx"
+df = pd.read_excel(path)
+dataextraction = np.array(df.iloc[4:260, 0:256])
+dataframe = pd.DataFrame(dataextraction)
+data = np.array(dataframe.iloc[0:256, 0:256])
+
+#SET; Statistical Quantity - Uniform Width & Depth
+
+n = 85
+number2 = round(n/3)
+number3 = round(n/9)
+
+#SET; Statistical Quantity - Origin Point; Starting Point Referenced from Middle Cell
+
+startingpoint_pre = {'col': [84, 81]}
+startingpoint_pre2 = pd.DataFrame(startingpoint_pre)
+startingpoint = startingpoint_pre2['col']
+
+sobeloperator_gx = {'gx': [-1, 0, 1, -2, 0, 2, -1, 0, 1]}
+sobeloperator_gy = {'gy': [1, 2, 1, 0, 0, 0, -1, -2, -1]}
+sobel_operator_gx = pd.DataFrame(sobeloperator_gx)
+sobel_operator_gy = pd.DataFrame(sobeloperator_gy)
+gx = sobel_operator_gx['gx']
+gy = sobel_operator_gy['gy']
+
+gx_output = []
+gy_output = []
+
+gx_outputpart2 = []
+gy_outputpart2 = []
+
+gx_outputpart3 = []
+gy_outputpart3 = []
+
+for z in range(2):
+    x = n-startingpoint[z]
+    inputxyvalues = {'row_data': [-n+x, -n+x, -n+x, 0, 0, 0, n-x, n-x, n-x], 'col_data': [-n+x, 0, n-x, -n+x, 0, n-x, -n+x, 0, n-x]}    
+    inputvalues = pd.DataFrame(inputxyvalues)
+    col_data = inputvalues['col_data']
+    row_data = inputvalues['row_data']
+    for i in range(len(inputvalues)):
+        col_start = startingpoint[z] + col_data[i]
+        row_start = startingpoint[z] + row_data[i]
+        col_end = np.add(col_start,startingpoint[z])
+        row_end = np.add(row_start,startingpoint[z])
+        xy = data[row_start:row_end, col_start:col_end]
+        #Roughness Amplitude Parameters
+        n2 = np.square(n)
+        n3 = np.divide(1,n2)
+        ans = np.sum(xy)
+        z_hat = np.multiply(n3,ans)
+        r_of_j = [x - z_hat for x in xy]
+        abs_rj = np.absolute(r_of_j)
+        ans2 = np.sum(abs_rj)
+        final_ans = np.multiply(n3, ans2)
+        gx_preoutput = np.multiply(final_ans, gx[i])
+        gy_preoutput = np.multiply(final_ans, gy[i])
+        gx_output.append(gx_preoutput)
+        gy_output.append(gy_preoutput)
+        for j in range(9):
+            startingpoint2 = int(np.round(np.divide(startingpoint[z],3)))
+            inputxyvalues2 = {'row_data2': [-startingpoint2, -startingpoint2, -startingpoint2, 0, 0, 0, startingpoint2, startingpoint2, startingpoint2], 'col_data2': [-startingpoint2, 0, startingpoint2, -startingpoint2, 0, startingpoint2, -startingpoint2, 0, startingpoint2]}
+            inputvalues2 = pd.DataFrame(inputxyvalues2)
+            col_data2 = inputvalues2['col_data2']
+            row_data2 = inputvalues2['row_data2'] 
+            col_start2 = col_start + startingpoint2 + col_data2[j]
+            row_start2 = row_start + startingpoint2 + row_data2[j]
+            col_end2 = np.add(col_start2,startingpoint2)
+            row_end2 = np.add(row_start2,startingpoint2)
+            xxyy = data[row_start2:row_end2, col_start2:col_end2]
+            #Roughness Amplitude Parameters
+            n22 = np.square(number2)
+            n33 = np.divide(1,n22)
+            anspart2 = np.sum(xxyy)
+            z_hat2 = np.multiply(n33,anspart2)
+            r_of_j2 = [x - z_hat2 for x in xxyy]
+            abs_rj2 = np.absolute(r_of_j2)
+            ans2part2 = np.sum(abs_rj2)
+            final_ans2 = np.multiply(n33, ans2part2)
+            gx_preoutput2 = np.multiply(final_ans2, gx[j])
+            gy_preoutput2 = np.multiply(final_ans2, gy[j])
+            gx_outputpart2.append(gx_preoutput2)
+            gy_outputpart2.append(gy_preoutput2)
+            for k in range(9):
+                startingpoint3 = int(np.round(np.divide(startingpoint[z],9)))
+                inputxyvalues3 = {'row_data3': [-startingpoint3, -startingpoint3, -startingpoint3, 0, 0, 0, startingpoint3, startingpoint3, startingpoint3], 'col_data3': [-startingpoint3, 0, startingpoint3, -startingpoint3, 0, startingpoint3, -startingpoint3, 0, startingpoint3]}
+                inputvalues3 = pd.DataFrame(inputxyvalues3)
+                col_data3 = inputvalues3['col_data3']
+                row_data3 = inputvalues3['row_data3'] 
+                col_start3 = col_start2 + startingpoint3 + col_data3[k]
+                row_start3 = row_start2 + startingpoint3 + row_data3[k]
+                col_end3 = np.add(col_start3,number3)
+                row_end3 = np.add(row_start3,number3)
+                xxxyyy = data[row_start3:row_end3, col_start3:col_end3]
+                #Roughness Amplitude Parameters
+                n222 = np.square(number3)
+                n333 = np.divide(1,n222)
+                anspart3 = np.sum(xxxyyy)
+                z_hat3 = np.multiply(n333,anspart3)
+                r_of_j3 = [x - z_hat3 for x in xxxyyy]
+                abs_rj3 = np.absolute(r_of_j3)
+                ans2part3 = np.sum(abs_rj3)
+                final_ans3 = np.multiply(n333, ans2part3)
+                gx_preoutput3 = np.multiply(final_ans3, gx[k])
+                gy_preoutput3 = np.multiply(final_ans3, gy[k])
+                gx_outputpart3.append(gx_preoutput3)
+                gy_outputpart3.append(gy_preoutput3)
+
+gx_outputpart2_array = np.array(gx_outputpart2)
+gx_outputpart2_format = np.reshape(gx_outputpart2_array, (2,9,9))
+gy_outputpart2_array = np.array(gy_outputpart2)
+gy_outputpart2_format = np.reshape(gy_outputpart2_array, (2,9,9))
+
+median_std = []
+
+for z in range(2):
+    for i in range(9):
+        prefinal_gx = gx_outputpart2_format[z,i,:]
+        prefinal_gy = gy_outputpart2_format[z,i,:]
+        final_gx = sum(prefinal_gx)
+        final_gy = sum(prefinal_gy)
+        absoluteG2 = np.sqrt(np.square(final_gx)+np.square(final_gy))
+        theta_rad2 = np.arctan(np.divide(final_gy, final_gx))
+        median_std.append(absoluteG2)
+
+median_std1 = median_std[0:8]
+median_std2 = median_std[9:17]
+
+median1 = np.median(median_std1)
+median2 = np.median(median_std2)
+
+std1 = np.std(median_std1)
+std2 = np.std(median_std2)
+
+rangeflag1 = np.add(median1, std1)
+rangeflag2 = np.add(median2, std2)
+
+for i in range(len(median_std1)):
+    if median_std1[i] > rangeflag1:
+        print(median_std1[i])
+    else:
+        print('0')
+for i in range(len(median_std2)):
+    if median_std2[i] > rangeflag2:
+        print(median_std2[i])
+    else:
+        print('0')
+
+        
+gx_outputpart3_array = np.array(gx_outputpart3)
+gx_outputpart3_format = np.reshape(gx_outputpart3_array, (2,81,9))
+gy_outputpart3_array = np.array(gy_outputpart3)
+gy_outputpart3_format = np.reshape(gy_outputpart3_array, (2,81,9))
+
+median_std_part2 = []
+
+for z in range(2):
+    for i in range(81):
+        prefinal_gx2 = gx_outputpart3_format[z,i,:]
+        prefinal_gy2 = gy_outputpart3_format[z,i,:]
+        final_gx2 = sum(prefinal_gx2)
+        final_gy2 = sum(prefinal_gy2)
+        absoluteG3 = np.sqrt(np.square(final_gx2)+np.square(final_gy2))
+        theta_rad3 = np.arctan(np.divide(final_gy2, final_gx2))
+        median_std_part2.append(absoluteG3)
+
+median_std1_part2 = median_std_part2[0:81]
+median_std2_part2 = median_std_part2[81:162]
+
+median1_part2 = np.median(median_std1_part2)
+median2_part2 = np.median(median_std2_part2)
+
+std1_part2 = np.std(median1_part2)
+std2_part2 = np.std(median2_part2)
+
+rangeflag1_part2 = np.add(median1_part2, std1_part2)
+rangeflag2_part2 = np.add(median2_part2, std2_part2)
+
+for i in range(len(median_std1_part2)):
+    if median_std1_part2[i] > rangeflag1_part2:
+        print(median_std1_part2[i])
+    else:
+        print('0')
+for i in range(len(median_std2_part2)):
+    if median_std2_part2[i] > rangeflag2_part2:
+        print(median_std2_part2[i])
+    else:
+        print('0')       
+        
+median_std_grid = np.reshape(median_std1_part2, (3,3,3,3))
+median_std_grid2 = np.reshape(median_std2_part2, (3,3,3,3))
+    
+f1 = open('C:/Users/jb00202/Downloads/griddata.txt', 'w')
+f1.write('81 G values, 3x3x3x3 shape!, 252x252 grid \n')
+f1.write(str(median_std_grid))
+f1.write('\n 81 G Values, 243x243 grid \n')
+f1.write(str(median_std_grid2))
+f1.close
