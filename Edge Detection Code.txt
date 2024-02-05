@@ -3,7 +3,7 @@ import pandas as pd
 
 #Data Extraction
 
-path = "C:/Users/jb00202/Downloads/316L-TP3-0004.xlsx"
+path = "INPUT_FILE_"
 df = pd.read_excel(path)
 dataextraction = np.array(df.iloc[4:260, 0:256])
 dataframe = pd.DataFrame(dataextraction)
@@ -195,7 +195,7 @@ for i in range(len(median_std2_part2)):
 median_std_grid = np.reshape(median_std1_part2, (3,3,3,3))
 median_std_grid2 = np.reshape(median_std2_part2, (3,3,3,3))
     
-f1 = open('C:/Users/jb00202/Downloads/griddata.txt', 'w')
+f1 = open('C:/Output_FILE_LOCATION, 'w')
 f1.write('81 G values, 3x3x3x3 shape!, 252x252 grid \n')
 f1.write(str(median_std_grid))
 f1.write('\n 81 G Values, 243x243 grid \n')
