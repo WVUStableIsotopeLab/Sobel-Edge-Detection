@@ -23,5 +23,5 @@ column size of "startingpoint_pre" and the range of the initial for-loop
 in the nested-loop. 
 
 The output magnitudes are ultimately generated for each native square at
-the third iteration of sobel operator application. Values are written to a 
+the third iteration of Sobel operator application. Values are written to a 
 user selected output file.
